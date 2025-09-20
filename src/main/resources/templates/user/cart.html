@@ -38,6 +38,7 @@
 							<tr th:each="cart,c:${carts}">
 								<th scope="row">[[${c.count}]]</th>
 								<td><img
+									
 									th:src="@{'/img/product_img/'+${cart.product.image}}"
 									width="70px" height="70px"></td>
 								<td>[[${cart.product.title}]]</td>
@@ -60,7 +61,7 @@
 						</tbody>
 					</table>
 					<div class="text-center">
-						<a href="#" class="btn btn-warning"> Proceed Payment</a>
+						<a href="/user/orders" class="btn btn-warning"> Proceed Payment</a>
 					</div>
 				</div>
 			</div>
