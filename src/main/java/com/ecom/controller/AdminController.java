@@ -24,11 +24,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ecom.model.Category;
 import com.ecom.model.Product;
+import com.ecom.model.ProductOrder;
 import com.ecom.model.UserDtls;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
+import com.ecom.service.OrderService;
 import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
+import com.ecom.util.OrderStatus;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -48,6 +51,9 @@ public class AdminController {
 	@Autowired
 	private CartService cartService;
 
+	@Autowired
+	private OrderService orderService;
+	
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
@@ -257,4 +263,41 @@ public class AdminController {
 		return "redirect:/admin/users";
 	}
 
+	@GetMapping("/orders")
+	public String getAllOrders(Model m) {
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+		m.addAttribute("orders",allOrders);
+		
+		return "/admin/orders";
+	}
+	
+
+	@PostMapping("/update-order-status")
+	public String updateOrderStatus(HttpSession session,@RequestParam Integer id,@RequestParam Integer st)
+	{
+		OrderStatus[] values = OrderStatus.values();
+		String status=null;
+		
+		for(OrderStatus orderSt : values)
+		{
+			if(orderSt.getId().equals(st))
+			{
+				status=orderSt.getName();
+				
+			}
+			
+		}
+		Boolean updateOrder = orderService.updateOrderStarus(id, status);
+		
+		if(updateOrder)
+		{
+			session.setAttribute("succMsg", "Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "Stastus Not Updated");
+		}
+		
+		return "redirect:/admin/orders";
+	}
+
+	
 }

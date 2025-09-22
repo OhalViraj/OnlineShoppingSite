@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +85,14 @@ public class OrderServiceImpl implements OrderService{
 		}
 		
 		return null;
+	}
+
+	@Override
+	public List<ProductOrder> getAllOrders() {
+		// TODO Auto-generated method stub
+		
+		List<ProductOrder> orders = orderRepo.findAll();
+		return orders;
 	}
 	
 	
