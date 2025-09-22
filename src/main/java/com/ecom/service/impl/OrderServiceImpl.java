@@ -1,7 +1,9 @@
 package com.ecom.service.impl;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +36,12 @@ public class OrderServiceImpl implements OrderService{
 		{
 			ProductOrder order=new ProductOrder();
 			order.setOrderId(UUID.randomUUID().toString());
-			order.setOrderDate(new Date());
+			order.setOrderDate(LocalDate.now());
 			order.setProduct(cart.getProduct());
 			order.setPrice(cart.getProduct().getDiscountPrice());
 			order.setQuantity(cart.getQuantity());
 			order.setUser(cart.getUser());
-			order.setStatus(OrderStatus.In_PROGRESS.getName());
+			order.setStatus(OrderStatus.IN_PROGRESS.getName());
 			order.setPaymentType(orderRequest.getPaymentType());
 			
 			OrderAddress address=new OrderAddress();
@@ -58,5 +60,32 @@ public class OrderServiceImpl implements OrderService{
 		
 		
 	}
+
+	@Override
+	public List<ProductOrder> getOrdersByUser(Integer userId) {
+		// TODO Auto-generated method stub
+		
+		List<ProductOrder> orders=orderRepo.findByUserId(userId);
+		return orders;
+	}
+
+	@Override
+	public Boolean updateOrderStarus(Integer id, String status) {
+		// TODO Auto-generated method stub
+		Optional<ProductOrder> findById = orderRepo.findById(id);
+		
+		if(findById.isPresent())
+		{
+			ProductOrder productOrder = findById.get();
+			productOrder.setStatus(status);
+			orderRepo.save(productOrder);
+			
+			return true;
+		}
+		
+		return null;
+	}
+	
+	
 
 }
