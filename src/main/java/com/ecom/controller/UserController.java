@@ -1,5 +1,6 @@
 package com.ecom.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.List;
 
@@ -24,13 +25,18 @@ import com.ecom.service.CategoryService;
 import com.ecom.service.CommnServiceImpl;
 import com.ecom.service.OrderService;
 import com.ecom.service.UserService;
+import com.ecom.util.CommonUtil;
 import com.ecom.util.OrderStatus;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
+	@Autowired
+    private  CommonUtil commonUtil;
 
     private final CommnServiceImpl commnServiceImpl;
 	@Autowired
@@ -44,8 +50,11 @@ public class UserController {
 	@Autowired
 	private CartService cartService;
 
-    UserController(CommnServiceImpl commnServiceImpl) {
+	
+	
+    UserController(CommnServiceImpl commnServiceImpl, CommonUtil commonUtil) {
         this.commnServiceImpl = commnServiceImpl;
+        this.commonUtil = commonUtil;
     }
 
 	@GetMapping("/")
@@ -123,7 +132,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/save-order")
-	public String saveOrder(@ModelAttribute OrderRequest request,Principal p)
+	public String saveOrder(@ModelAttribute OrderRequest request,Principal p) throws MessagingException, Exception
 	{
 		//System.out.println(request);
 		UserDtls user = getLoggedInUserDetails(p);
@@ -149,7 +158,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/update-status")
-	public String updateOrderStatus(HttpSession session,@RequestParam Integer id,@RequestParam Integer st)
+	public String updateOrderStatus(@RequestParam Integer id,@RequestParam Integer st,HttpSession session)
 	{
 		OrderStatus[] values = OrderStatus.values();
 		String status=null;
@@ -163,9 +172,16 @@ public class UserController {
 			}
 			
 		}
-		Boolean updateOrder = orderService.updateOrderStarus(id, status);
+		ProductOrder updateOrder = orderService.updateOrderStarus(id, status);
 		
-		if(updateOrder)
+		try {
+			commonUtil.sendMailForProductOrder(updateOrder, status);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		if(!ObjectUtils.isEmpty(updateOrder))
 		{
 			session.setAttribute("succMsg", "Status Updated");
 		} else {

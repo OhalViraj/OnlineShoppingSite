@@ -7,6 +7,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.ecom.model.ProductOrder;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +24,7 @@ public class CommonUtil {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 
-		helper.setFrom("daspabitra55@gmail.com", "Shooping Cart");
+		helper.setFrom("jeffhbk420@gmail.com", "Shooping Cart");
 		helper.setTo(reciepentEmail);
 
 		String content = "<p>Hello,</p>" + "<p>You have requested to reset your password.</p>"
@@ -42,5 +44,43 @@ public class CommonUtil {
 		return siteUrl.replace(request.getServletPath(), "");
 
 	}
+	
+	String msg=null;
 
+	public Boolean sendMailForProductOrder(ProductOrder order,String status) throws UnsupportedEncodingException, MessagingException
+	{
+		msg="<p>Hello , [[name]] </p><br> <p> Thank You Order <b>[[orderStatus]] </b></p>"
+				+ "<p> Product Details : </p>"
+				+ "<p> Name : [[productName]]</p> "
+				+ "<p> Category : [[category]]</p> "
+				+ "<p> Quantity : [[quantity]]</p> "
+				+ "<p> Price : [[price]]</p> "
+				+ "<p> Payment Type : [[PaymentType]]</p> ";
+		
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper=new MimeMessageHelper(message);
+		
+		helper.setFrom("jeffhbk420@gmail.com","Shooping Cart");
+		helper.setTo(order.getOrderAddress().getEmail());
+
+		
+		
+		OrderStatus[] values = OrderStatus.values();
+		
+		msg=msg.replace("[[name]]",order.getOrderAddress().getFirstName());
+		
+		msg=msg.replace("[[orderStatus]]",status);
+		msg=msg.replace("[[productName]]", order.getProduct().getTitle());
+		msg=msg.replace("[[category]]", order.getProduct().getCategory());
+		msg=msg.replace("[[quantity]]", order.getQuantity().toString());
+		msg=msg.replace("[[price]]", order.getPrice().toString());
+		msg=msg.replace("[[paymentType]]", order.getPaymentType());
+		
+		
+		helper.setSubject("Password Reset");
+		helper.setText(msg, true);
+		mailSender.send(message);
+		return true;
+		
+	}
 }
