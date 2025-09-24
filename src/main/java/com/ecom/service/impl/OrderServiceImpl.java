@@ -102,6 +102,14 @@ public class OrderServiceImpl implements OrderService{
 		List<ProductOrder> orders = orderRepo.findAll();
 		return orders;
 	}
+
+	@Override
+	public ProductOrder getOrdersByOrderId(String orderId) {
+		// TODO Auto-generated method stub
+		
+		ProductOrder findByOrderId = orderRepo.findByOrderId(orderId);
+		return findByOrderId;
+	}
 	
 	
 

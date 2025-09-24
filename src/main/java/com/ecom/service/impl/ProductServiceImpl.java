@@ -105,4 +105,13 @@ public class ProductServiceImpl implements ProductService {
 		return products;
 	}
 
+	@Override
+	public List<Product> searchProduct(String ch) {
+		// TODO Auto-generated method stub
+		return productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch, ch);
+		
+		
+	}
+
+	
 }
