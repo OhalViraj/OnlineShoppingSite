@@ -148,6 +148,23 @@ public class ProductServiceImpl implements ProductService {
 		Pageable pageable=PageRequest.of(pageNo,pageSize);
 		return productRepository.findAll(pageable);
 	}
+
+	@Override
+	public Page<Product> searchActiveProductPagination(Integer pageNo, Integer pageSize,String category,String ch) {
+		// TODO Auto-generated method stub
+		
+
+		Page<Product> pageProduct= null;
+		Pageable pageable=PageRequest.of(pageNo, pageSize);
+		pageProduct=productRepository.findByisActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch, ch,pageable);
+		/*
+		 * if (ObjectUtils.isEmpty(category)) { pageProduct=
+		 * productRepository.findByIsActiveTrue(pageable); }else {
+		 * pageProduct=productRepository.findByCategory(pageable,category); }
+		 */
+
+		return pageProduct;
+	}
  
 	
 	

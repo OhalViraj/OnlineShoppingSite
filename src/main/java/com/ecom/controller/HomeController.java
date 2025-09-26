@@ -35,6 +35,7 @@ import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
 import com.ecom.util.CommonUtil;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -92,7 +93,8 @@ public class HomeController {
 	@GetMapping("/products")
 	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
 			@RequestParam(name = "pageNo",defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize",defaultValue = "4")Integer pageSize) {
+			@RequestParam(name = "pageSize",defaultValue = "4")Integer pageSize,
+			@RequestParam (defaultValue = "")String ch) {
 		// System.out.println("category="+category);
 		List<Category> categories = categoryService.getAllActiveCategory();
 		m.addAttribute("categories", categories);
@@ -102,8 +104,15 @@ public class HomeController {
 		 * List<Product> products = productService.getAllActiveProducts(category);
 		 * m.addAttribute("products", products);
 		 */
+		Page<Product> page =null;
+		if(StringUtils.isEmpty(ch))
+		{
+			page= productService.getAllActiveProductPagination(pageNo, pageSize,category);
+		}else
+		{
+			page=productService.searchActiveProductPagination(pageNo,pageSize,category,ch);
+		}
 		
-		Page<Product> page = productService.getAllActiveProductPagination(pageNo, pageSize,category);
 		List<Product> products=page.getContent();
 		
 		m.addAttribute("products",products);
