@@ -174,6 +174,12 @@ public class UserServiceImpl implements UserService {
 		return saveUser;
 	}
 
+	@Override
+	public Boolean existsEmail(String email) {
+		// TODO Auto-generated method stub
+		return userRepository.existsByEmail(email);
+	}
+
 	
 	
 }
